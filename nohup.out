@@ -1,0 +1,39 @@
+[2016-11-17 15:54:51,707: INFO/MainProcess] Connected to amqp://guest:**@127.0.0.1:5672//
+[2016-11-17 15:54:51,717: INFO/MainProcess] mingle: searching for neighbors
+[2016-11-17 15:54:52,724: INFO/MainProcess] mingle: all alone
+[2016-11-17 15:54:52,737: WARNING/MainProcess] celery@localhost.localdomain ready.
+
+Restarting celery worker (manage.py celery worker --loglevel=info -c 5)
+ 
+ -------------- celery@localhost.localdomain v3.1.17 (Cipater)
+---- **** ----- 
+--- * ***  * -- Linux-3.10.0-327.el7.x86_64-x86_64-with-centos-7.2.1511-Core
+-- * - **** --- 
+- ** ---------- [config]
+- ** ---------- .> app:         default:0x332f110 (djcelery.loaders.DjangoLoader)
+- ** ---------- .> transport:   amqp://guest:**@127.0.0.1:5672//
+- ** ---------- .> results:     database
+- *** --- * --- .> concurrency: 5 (prefork)
+-- ******* ---- 
+--- ***** ----- [queues]
+ -------------- .> celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . shaker.tasks.accept_grains_task
+  . shaker.tasks.dashboard_task
+  . shaker.tasks.grains_task
+  . shaker.tasks.minions_status_task
+
+[2016-11-17 18:09:26,936: INFO/MainProcess] Connected to amqp://guest:**@127.0.0.1:5672//
+[2016-11-17 18:09:26,946: INFO/MainProcess] mingle: searching for neighbors
+[2016-11-17 18:09:27,955: INFO/MainProcess] mingle: all alone
+[2016-11-17 18:09:27,971: WARNING/MainProcess] celery@localhost.localdomain ready.
+[2016-11-18 10:50:45,716: INFO/MainProcess] Received task: shaker.tasks.dashboard_task[84ebcb87-6e9d-4ceb-8f11-04ff74c3d2f9]
+[2016-11-18 10:50:45,717: INFO/MainProcess] Received task: shaker.tasks.minions_status_task[09c79ef9-a9f7-4ee4-ae25-1cebae095afa]
+[2016-11-18 10:51:01,932: INFO/MainProcess] Task shaker.tasks.minions_status_task[09c79ef9-a9f7-4ee4-ae25-1cebae095afa] succeeded in 16.213692048s: None
+[2016-11-18 10:51:02,002: INFO/MainProcess] Task shaker.tasks.dashboard_task[84ebcb87-6e9d-4ceb-8f11-04ff74c3d2f9] succeeded in 16.282822502s: None
+[2016-11-25 10:01:32,331: INFO/MainProcess] Received task: shaker.tasks.dashboard_task[becf6858-13db-4a26-b57d-15089c0350a6]
+[2016-11-25 10:01:32,334: INFO/MainProcess] Received task: shaker.tasks.minions_status_task[d2ca9dd3-5504-4de9-8a56-3b8718058382]
+[2016-11-25 10:01:53,576: INFO/MainProcess] Task shaker.tasks.dashboard_task[becf6858-13db-4a26-b57d-15089c0350a6] succeeded in 21.034647657s: None
+[2016-11-25 10:01:53,577: INFO/MainProcess] Task shaker.tasks.minions_status_task[d2ca9dd3-5504-4de9-8a56-3b8718058382] succeeded in 21.118876173s: None

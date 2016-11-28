@@ -1,0 +1,348 @@
+{% extends "base.html" %}
+  {% block content %}
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h2 class="page-header">版本管理</h2>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-12">
+
+                    <div class="form-group">
+                        <input id="open_create_branch" data-uuid="3dfef12e-e714-40a3-8bf9-296a6590335d" data-toggle="modal" type="button" data-target="#create-branch-modal" value="创建分支" class="btn btn-outline btn-success btn-xs"/>
+                        <input id="open_merge_branch" data-uuid="3dfef12e-e714-40a3-8bf9-296a6590335d" data-toggle="modal" type="button" data-target="#create-branch-modal1" value="合并分支" class="btn btn-outline btn-success btn-xs"/>
+                    </div>
+
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            版本列表
+                        </div>
+
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <table id="treetable" class="table table-condensed table-hover table-striped fancytree-fade-expander">
+                                <colgroup>
+                                    <col width="80px"></col>
+                                    <col width="30px"></col>
+                                    <col width="*"></col>
+                                    <col width="100px"></col>
+                                    <col width="100px"></col>
+                                    <col width="100px"></col>
+                                </colgroup>
+                                <thead>
+                                    <tr> <th></th> <th></th> <th>路径</th> <th>目录</th> <th></th> <th>操作</th> </tr>
+                                </thead>
+                                <tbody>
+                                    <tr> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- pandel-headding -->
+                    </div>
+                    <!-- panel-default -->
+                </div>
+                <!-- col-lg-12 -->
+            </div>
+            <!-- /.row -->
+
+        </div>
+        <!-- /#page-wrapper -->
+
+	<!-- create-branch begin -->
+	<div class="modal fade" id="create-branch-modal" tabindex="-1" role="dialog" aria-labelledby="checkModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">创建分支</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <form class="form-horizontal">
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="suite-view-link">分支名称</label>
+                                <div id="suite-view-link" class="col-sm-10">
+                                        <input type="text" id="branch_name" value="" class="form-control" style='width:30%'/>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="suite-view-ref">项目</label>
+                                <div class="col-sm-10">
+				    <span id="project_info"></span>
+                                    <select id="project_name" class="form-control" style='width:30%'>
+                                    </select>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" id="create_branch" class="btn btn-outline btn-success btn-xs" data-dismiss="modal">提交</button>
+                        <button type="button" id="close_create_branch" class="btn btn-outline btn-danger btn-xs" data-dismiss="modal">关闭</button>
+                    </div>
+            </div>
+        </div>
+	</div>
+	<!-- create-branch end -->
+
+    <!--新增加表格树js组件FancyTree Begin-->
+    {% load staticfiles %}
+      <!-- Jquery JavaScript -->
+    <script src="//code.jquery.com/jquery-1.12.1.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var $jq1121 = $;
+    </script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="{% static "bower_components/bootstrap/dist/js/bootstrap.min.js" %}"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="{% static "bower_components/metisMenu/dist/metisMenu.min.js" %}"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="{% static "dist/js/sb-admin-2.js" %}"></script>
+
+    <!--FancyTree plugin JavaScript -->
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js" type="text/javascript"></script>
+    <script src="{% static "bower_components/fancytree/jquery.fancytree.js" %}"></script>
+    <script src="{% static "bower_components/fancytree/jquery.fancytree.dnd.js" %}"></script>
+    <script src="{% static "bower_components/fancytree/jquery.fancytree.edit.js" %}"></script>
+    <script src="{% static "bower_components/fancytree/jquery.fancytree.glyph.js" %}"></script>
+    <script src="{% static "bower_components/fancytree/jquery.fancytree.table.js" %}"></script>
+    <script src="{% static "bower_components/fancytree/jquery.fancytree.wide.js" %}"></script>
+    <script src="{% static "bower_components/jquery-ui/jquery-ui.min.js" %}"></script>
+    <!-- Include Fancytree skin and library -->
+
+    <link href="{% static "bower_components/fancytree/ui.fancytree.min.css" %}" rel="stylesheet" type="text/css">
+
+    <!--新增加表格树js组件FancyTree End-->
+    <style type="text/css">
+	/* Define custom width and alignment of table columns */
+	#treetable {
+		table-layout: fixed;
+	}
+	#treetable tr td:nth-of-type(1) {
+		text-align: right;
+	}
+	#treetable tr td:nth-of-type(2) {
+		text-align: center;
+	}
+	#treetable tr td:nth-of-type(3) {
+		min-width: 100px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+    </style>
+
+    <!--当json文档加载时初始化树-->
+
+<script type="text/javascript">
+  glyph_opts = {
+    map: {
+      doc: "glyphicon glyphicon-file",
+      docOpen: "glyphicon glyphicon-file",
+      checkbox: "glyphicon glyphicon-unchecked",
+      checkboxSelected: "glyphicon glyphicon-check",
+      checkboxUnknown: "glyphicon glyphicon-share",
+      dragHelper: "glyphicon glyphicon-play",
+      dropMarker: "glyphicon glyphicon-arrow-right",
+      error: "glyphicon glyphicon-warning-sign",
+      expanderClosed: "glyphicon glyphicon-menu-right",
+      expanderLazy: "glyphicon glyphicon-menu-right",  // glyphicon-plus-sign
+      expanderOpen: "glyphicon glyphicon-menu-down",  // glyphicon-collapse-down
+      folder: "glyphicon glyphicon-folder-close",
+      folderOpen: "glyphicon glyphicon-folder-open",
+      loading: "glyphicon glyphicon-refresh glyphicon-spin"
+    }
+  };
+  $jq1121(function(){
+    // Initialize Fancytree
+
+     $jq1121("#treetable").fancytree({
+      extensions: ["dnd", "edit", "glyph", "table"],
+      checkbox: true,
+      dnd: {
+        focusOnClick: true,
+        dragStart: function(node, data) { return true; },
+        dragEnter: function(node, data) { return true; },
+        dragDrop: function(node, data) { data.otherNode.copyTo(node, data.hitMode); }
+      },
+      glyph: glyph_opts,
+      source: {
+          url: '/svn_wrapper/ajax_get_data',
+          cache:false
+      },
+      table: {
+        checkboxColumnIdx: 1,
+        nodeColumnIdx: 2
+      },
+
+      activate: function(event, data) {
+      },
+      lazyLoad: function(event, data) {
+        data.result = {url: "/svn_wrapper/ajax_get_data", debugDelay: 100};
+      },
+      renderColumns: function(event, data) {
+        var node = data.node,
+          $tdList = $(node.tr).find(">td");
+//        $tdList.eq(0).text(node.getIndexHier());
+        $tdList.eq(3).text(!!node.folder);
+      }
+    });
+  });
+</script>
+
+        <!--创建分支-->
+        <script type="text/javascript">
+		var OPTION_TPL = '<option value="{$PROJECT_NAME$}">{$PROJECT_NAME$}</option>';
+		function init_branch_dialog(){
+			$('#branch_name').text('');
+
+			$('#project_info').text('');
+			$('#project_info').show();
+
+			$('#project_name').hide();
+			$('#create_branch').show()
+		}
+
+		init_branch_dialog();
+
+
+
+            $(document).ready(function() {
+
+		$('#open_create_branch').click(function(){
+			init_branch_dialog();
+			$('#project_info').text('loading...');
+
+			$.getJSON(
+				'/svn_wrapper/get_projects',
+				function(data){
+					if(data.ret != 0){
+						$('#project_info').text('无有效项目!');
+						$('#create_branch').hide();
+						return;
+					}
+					
+					$('#project_name').empty();
+					for(var id in data.projects){
+						var project_name = data.projects[id];
+						var node = OPTION_TPL.replace(/{\$PROJECT_NAME\$}/g, project_name)
+						$('#project_name').append(node);
+					}
+
+
+					$('#project_info').hide();
+				 	$('#project_name').show();
+					$('#create_branch').show();
+				}
+			);
+		});
+
+
+
+		$('#close_create_branch').click(function(){
+			init_branch_dialog();
+		});
+
+              $('#create_branch').click(function(){
+		var bn = $.trim($('#branch_name').val());
+		var pn = $.trim($('#project_name').val());
+
+		if( $.trim(bn) == ''){ alert("分支名称不能为空");return false;}
+		if( $.trim(pn) == ''){ alert("项目不能为空");return false;}
+
+		$.getJSON('/svn_wrapper/branch_create', 
+			{
+				branch_name: bn,
+				project_name: pn
+			},
+			function(data){
+				if(data.ret == 0){
+					alert('分支创建成功!');
+					$('#close_create_branch').click();
+					location.reload(); 
+				}else{
+					alert(data.msg);
+				}
+			}
+		);
+
+		return false;
+              });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	      $('.build_btn').click(function(){
+		$(this).prop('disabled', true);
+ 		$(this).removeClass('btn-success')
+ 		$(this).addClass('btn-info')
+		$(this).text('正在构建')
+
+		var jn = $(this).attr('jname');
+		var _this = $(this);		
+
+		if($.trim(jn) == ''){
+			alert("项目名称异常");
+			return;
+		}
+		$.getJSON('/jenkins_wrapper/build',
+			{
+				job_name: jn
+			},
+			function(data){
+				if(data.ret == 0){
+					alert('构建完成');
+					_p = _this.parent().parent();
+					succ = _p.find('.succ_build')[0];
+					$(succ).empty();
+					if(data.succ != -1){
+						$(succ).append('<a href="http://192.168.1.203:8080/job/' + jn + '/' + data.succ + '" target="_blank">build(#' + data.succ + ')</a>')	
+					}else{
+						$(succ).append("暂无");
+					}
+					
+					unsucc = _p.find('.unsucc_build')[0];
+                                        $(unsucc).empty();
+                                        if(data.unsucc != -1){
+                                                $(unsucc).append('<a href="http://192.168.1.203:8080/job/' + jn + '/' + data.unsucc + '" target="_blank">build(#' + data.unsucc + ')</a>')        
+                                        }else{
+                                                $(unsucc).append("暂无");
+                                        }					
+				}else{
+					alert(data.msg);
+				}
+				$(_this).prop('disabled', false);
+                		$(_this).removeClass('btn-info')
+		                $(_this).addClass('btn-success')
+		                $(_this).text('立即构建')
+			}
+		);
+	      });
+   
+            });
+        </script>
+
+
+  {% endblock %}

@@ -1,0 +1,8 @@
+
+              RabbitMQ 3.1.5. Copyright (C) 2007-2013 GoPivotal, Inc.
+  ##  ##      Licensed under the MPL.  See http://www.rabbitmq.com/
+  ##  ##
+  ##########  Logs: /var/log/rabbitmq/rabbit@localhost.log
+  ######  ##        /var/log/rabbitmq/rabbit@localhost-sasl.log
+  ##########
+              Starting broker... completed with 6 plugins.

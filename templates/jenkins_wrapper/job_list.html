@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+  {% block content %}
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h2 class="page-header">构建管理</h2>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-12">
+
+                    <div class="form-group">
+                        <input data-uuid="3dfef12e-e714-40a3-8bf9-296a6590335d" data-toggle="modal" type="button" data-target="#view-modal" value="创建构建项目" class="btn btn-outline btn-success btn-xs"/>
+                    </div>
+
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            项目列表
+                        </div>
+
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div class="dataTable_wrapper">
+                                 <table class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                    <thead>
+                                        <tr>
+                                            <th>项目名称</th>
+                                            <th>上次构建成功</th>
+                                            <th>上次构建失败</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for job in jobs %}
+                                        <tr class="odd gradeC">
+                                            <td><a href="{{ job.url }}" target="_blank">{{ job.displayName }}</a></td>
+                                            <td class="succ_build">
+                                                  {% if not job.lastSuccessfulBuild.number %}
+                                                      暂无
+                                                  {% else %}
+                                                      <a href="{{ job.lastSuccessfulBuild.url }}" target="_blank">build(#{{ job.lastSuccessfulBuild.number }})</a>
+                                                  {% endif %}
+                                            </td>
+                                            <td class="unsucc_build">
+                                                  {% if not job.lastUnsuccessfulBuild.number %}
+                                                      暂无
+                                                  {% else %}
+                                                      <a href="{{ job.lastUnsuccessfulBuild.url }}" target="_blank">build(#{{ job.lastUnsuccessfulBuild.number }})</a>
+                                                  {% endif %}
+                                            </td>
+                                            <td>
+						<button type="button" class="btn btn-success btn-xs build_btn" jname="{{ job.name }}" >立即构建</button>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- /.table-responsive -->                  
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /#page-wrapper -->
+
+
+        <!-- popup dialog-->
+	<div class="modal fade" id="view-modal" tabindex="-1" role="dialog" aria-labelledby="checkModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">项目信息</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <form class="form-horizontal">
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="suite-view-link">项目名称</label>
+                                <div id="suite-view-link" class="col-sm-10">
+                                        <input type="text" id="job_name" value="" class="form-control" style='width:30%'/>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="suite-view-ref">项目类型</label>
+                                <div class="col-sm-10">
+                                    <select id="job_type" class="form-control" style='width:30%'>
+                                        <option value="maven">Maven项目</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="suite-view-link">rootPOM</label>
+                                <div id="suite-view-link" class="col-sm-10">
+                                        <input type="text" id="rootPOM" value="pom.xml" class="form-control" style='width:30%'/>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="suite-view-link">命令项</label>
+                                <div id="suite-view-link" class="col-sm-10">
+                                        <input type="text" id="goals" value="" class="form-control" style='width:80%'/>
+                                </div>
+                            </div>
+
+			    <div class="form-group">
+                                <label class="col-sm-2 control-label" for="suite-view-link">SVN地址</label>
+                                <div id="suite-view-link" class="col-sm-10">
+					<input type="text" id="svn_addr" value="" class="form-control" style='width:80%'/>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="suite-view-ref">SVN验证</label>
+                                <div class="col-sm-10">
+                                    <select id="credential" class="form-control" style='width:30%'>
+     					{% for credential in credentials %}
+                                        <option value="{{ credential.id }}">{{ credential.displayName }}</option>
+					{% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" id="create_job" class="btn btn-outline btn-success btn-xs" data-dismiss="modal">提交</button>
+                        <button type="button" id="close_create" class="btn btn-outline btn-danger btn-xs" data-dismiss="modal">关闭</button>
+                    </div>
+            </div>
+        </div>
+	</div>
+
+	<script src="/static/bower_components/jquery/dist/jquery.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+              $('#create_job').click(function(){
+		var jn = $.trim($('#job_name').val());
+		var svn = $.trim($('#svn_addr').val());
+		var rp = $.trim($('#rootPOM').val());
+
+		if( $.trim(jn) == ''){ alert("项目名称不能为空");return false;}
+		if( $.trim(svn) == ''){ alert("SVN地址不能为空");return false;}
+		if( $.trim(rp) == ''){ alert("rootPOM不能为空");return false;}
+
+		$.get(	'/jenkins_wrapper/job_create', 
+			{
+				job_name: $('#job_name').val(), 
+				job_type: $('#job_type').val(), 
+				svn_addr: $('#svn_addr').val(), 
+				root_pom: $('#rootPOM').val(),
+				goals: $('#goals').val(),
+				credential:$('#credential').val() 
+			},
+			function(msg){
+				if(msg == 0){
+					alert('创建成功!');
+					$('#job_name').val('');
+					$('#svn_addr').val('');
+					$('#close_create').click();
+					location.reload(); 
+				}else{
+					alert(msg);
+				}
+			}
+		);
+
+		return false;
+              });
+
+	      $('.build_btn').click(function(){
+		$(this).prop('disabled', true);
+ 		$(this).removeClass('btn-success')
+ 		$(this).addClass('btn-info')
+		$(this).text('正在构建')
+
+		var jn = $(this).attr('jname');
+		var _this = $(this);		
+
+		if($.trim(jn) == ''){
+			alert("项目名称异常");
+			return;
+		}
+		$.getJSON('/jenkins_wrapper/build',
+			{
+				job_name: jn
+			},
+			function(data){
+				if(data.ret == 0){
+					alert('构建完成');
+					_p = _this.parent().parent();
+					succ = _p.find('.succ_build')[0];
+					$(succ).empty();
+					if(data.succ != -1){
+						$(succ).append('<a href="http://192.168.1.203:8080/job/' + jn + '/' + data.succ + '" target="_blank">build(#' + data.succ + ')</a>')	
+					}else{
+						$(succ).append("暂无");
+					}
+					
+					unsucc = _p.find('.unsucc_build')[0];
+                                        $(unsucc).empty();
+                                        if(data.unsucc != -1){
+                                                $(unsucc).append('<a href="http://192.168.1.203:8080/job/' + jn + '/' + data.unsucc + '" target="_blank">build(#' + data.unsucc + ')</a>')        
+                                        }else{
+                                                $(unsucc).append("暂无");
+                                        }					
+				}else{
+					alert(data.msg);
+				}
+				$(_this).prop('disabled', false);
+                		$(_this).removeClass('btn-info')
+		                $(_this).addClass('btn-success')
+		                $(_this).text('立即构建')
+			}
+		);
+	      });
+   
+            });
+        </script>
+
+  {% endblock %}

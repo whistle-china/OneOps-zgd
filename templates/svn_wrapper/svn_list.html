@@ -1,0 +1,596 @@
+{% extends "base.html" %}
+  {% block content %}
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h2 class="page-header">版本管理</h2>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-12">
+
+                    <div class="form-group">
+                        <input id="open_create_branch" data-uuid="3dfef12e-e714-40a3-8bf9-296a6590335d" data-toggle="modal" type="button" data-target="#create-branch-modal" value="创建分支" class="btn btn-outline btn-success btn-xs"/>
+                        <input id="open_pre_merge_branch" data-uuid="3dfef12e-e714-40a3-8bf9-296a6590336d" data-toggle="modal" type="button" data-target="#merge-branch-modal" value="冲突检测" class="btn btn-outline btn-success btn-xs"/>
+                        <input id="open_merge_branch" data-uuid="3dfef12e-e714-40a3-8bf9-296a6590337d" data-toggle="modal" type="button" data-target="#merge-branch-modal" value="合并主干" class="btn btn-outline btn-success btn-xs"/>
+                    </div>
+
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            版本列表
+                        </div>
+
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <table id="treetable" class="table table-condensed table-hover table-striped fancytree-fade-expander">
+                               <colgroup>
+                                    <col width="*"></col>
+                                    <col width="100px"></col>
+                                    <col width="100px"></col>
+                                    <col width="150px"></col>
+                                    <col width="50px"></col>
+                                    <col width="50px"></col>
+                                </colgroup>
+                                <thead>
+                                    <tr> <th>路径</th> <th>作者</th> <th>Revision</th> <th>提交时间</th> <th></th> <th></th> </tr>
+                                </thead>
+                                <tbody>
+                                    <tr> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- pandel-headding -->
+                    </div>
+                    <!-- panel-default -->
+                </div>
+                <!-- col-lg-12 -->
+            </div>
+            <!-- /.row -->
+
+        </div>
+        <!-- /#page-wrapper -->
+
+	<!-- create-branch begin -->
+	<div class="modal fade" id="create-branch-modal" tabindex="-1" role="dialog" aria-labelledby="checkModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">创建分支</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <form class="form-horizontal">
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="suite-view-ref">项目名称</label>
+                                <div class="col-sm-10">
+                                <span id="project_info"></span>
+                                    <select id="project_name" class="form-control" style='width:30%'>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="suite-view-link">分支名称</label>
+                                <div id="suite-view-link" class="col-sm-10">
+                                        <input type="text" id="branch_name" value="" class="form-control" style='width:30%'/>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" id="create_branch" class="btn btn-outline btn-success btn-xs" data-dismiss="modal">提交</button>
+                        <button type="button" id="close_create_branch" class="btn btn-outline btn-danger btn-xs" data-dismiss="modal">关闭</button>
+                    </div>
+            </div>
+        </div>
+	</div>
+	<!-- create-branch end -->
+
+  <!-- merge-branch begin -->
+  <div class="modal fade" id="merge-branch-modal" tabindex="-1" role="dialog" aria-labelledby="checkModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="dialog_title"></h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="suite-view-ref">项目名称</label>
+                                <div class="col-sm-10">
+                                <span id="m_project_info"></span>
+                                <select id="m_project_name" class="form-control" style='width:30%' onchange="changeProject();"></select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="suite-view-ref">分支名称</label>
+                                <div class="col-sm-10">
+                                <span id="m_branch_info"></span>
+                                <select id="m_branch_name" class="form-control" style='width:30%'></select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="suite-view-ref">冲突信息</label>
+                                <div class="col-sm-10">
+                                <textarea class="form-control" id="m_conflict_info" style='width:80%' rows="10"></textarea>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" id="pre_merge_branch" class="btn btn-outline btn-success btn-xs" data-dismiss="modal">冲突检测</button>
+                        <button type="button" id="merge_branch" class="btn btn-outline btn-success btn-xs" data-dismiss="modal">合并主干</button>
+                        <button type="button" id="close_merge_branch" class="btn btn-outline btn-danger btn-xs" data-dismiss="modal">关闭</button>
+                    </div>
+            </div>
+        </div>
+  </div>
+  <!-- merge-branch end -->
+
+
+
+
+  <!--新增加表格树js组件FancyTree Begin-->
+  {% load staticfiles %}
+  <!-- Fancytree UseJquery 1.12.1 version JavaScript -->
+  <script src="{% static "bower_components/jquery/dist/jquery-1.12.1.min.js" %}"></script>
+<!--  <script src="//code.jquery.com/jquery-1.12.1.min.js" type="text/javascript"></script>  -->
+
+  <script type="text/javascript">
+    var $jq1121 = $;
+  </script>
+
+  <!--
+  <script src="{% static "bower_components/bootstrap/dist/js/bootstrap.min.js" %}"></script>
+  <script src="{% static "bower_components/metisMenu/dist/metisMenu.min.js" %}"></script>
+  <script src="{% static "dist/js/sb-admin-2.js" %}"></script>
+  -->
+
+  <!--FancyTree plugin JavaScript -->
+
+  <script src="{% static "bower_components/jquery-ui/jquery-ui-1.11.4/jquery-ui.min.js" %}"></script>
+  <script src="{% static "bower_components/fancytree/jquery.fancytree.js" %}"></script>
+  <script src="{% static "bower_components/fancytree/jquery.fancytree.dnd.js" %}"></script>
+  <script src="{% static "bower_components/fancytree/jquery.fancytree.edit.js" %}"></script>
+  <script src="{% static "bower_components/fancytree/jquery.fancytree.glyph.js" %}"></script>
+  <script src="{% static "bower_components/fancytree/jquery.fancytree.table.js" %}"></script>
+  <script src="{% static "bower_components/fancytree/jquery.fancytree.gridnav.js" %}"></script>
+  <script src="{% static "bower_components/fancytree/jquery.fancytree.wide.js" %}"></script>
+  <script src="{% static "bower_components/jquery-ui/jquery-ui.min.js" %}"></script>
+  <!-- Include Fancytree skin and library -->
+
+  <link href="{% static "bower_components/fancytree/ui.fancytree.min.css" %}" rel="stylesheet" type="text/css">
+
+  <!--新增加表格树js组件FancyTree End-->
+  <style type="text/css">
+	#treetable {
+		table-layout: fixed;
+	}
+	#treetable tr td:nth-of-type(1) {
+		text-align: left;
+	}
+	#treetable tr td:nth-of-type(2) {
+		text-align: center;
+	}
+	#treetable tr td:nth-of-type(3) {
+		text-align: center;
+	}
+	#treetable tr td:nth-of-type(4) {
+		text-align: center;
+	}
+
+//	#treetable tr td:nth-of-type(3) {
+//		min-width: 100px;
+//		white-space: nowrap;
+//		overflow: hidden;
+//		text-overflow: ellipsis;
+//	}
+  </style>
+
+<script type="text/javascript">
+  var is_merge = false;
+	var OPTION_TPL = '<option value="{$PROJECT_NAME$}">{$PROJECT_NAME$}</option>';
+	function init_create_branch_dialog(){
+		$('#branch_name').text('');
+
+    disable_c_p_selector('loading...');
+    enable_c_btn();
+	}
+  // ------ create dialog seletor function --------
+  function enable_c_p_selector(){
+    $('#project_info').hide();
+    $('#project_info').text('');
+    $('#project_name').show();
+  }
+  function disable_c_p_selector(str){
+    $('#project_name').hide();
+    $('#project_info').text(str);
+    $('#project_info').show();
+  }
+  // ------ create dialog btn function --------
+  function enable_c_btn(){
+    $('#create_branch').show();
+    $('#close_create_branch').show();
+  }
+  function disable_c_btn(){
+    $('#create_branch').hide();
+    $('#close_create_branch').show();
+  }
+  // ------ merge dialog  --------
+  function init_merge_branch_dialog(){
+    disable_m_p_selector('loading...');
+    disable_m_b_selector('loading...');
+    disable_pm_and_m_btn();  
+  }
+  // ------ merge dialog btn function --------
+  function enable_pre_merge_btn(){
+    $('#pre_merge_branch').show();
+    $('#merge_branch').hide();
+    $('#close_merge_branch').show();
+    $('#m_conflict_info').text('');
+    $('#m_conflict_info').css('color','#090');
+  }
+  function enable_merge_btn(){
+    $('#pre_merge_branch').hide();
+    $('#merge_branch').show();
+    $('#close_merge_branch').show();
+    $('#m_conflict_info').text('');
+    $('#m_conflict_info').css('color','#090');
+  }
+  function disable_pm_and_m_btn(){
+    $('#pre_merge_branch').hide();
+    $('#merge_branch').hide();
+    $('#close_merge_branch').show();
+    $('#m_conflict_info').text('');
+    $('#m_conflict_info').css('color','#090');
+  }
+  // ------ merge dialog selector function --------
+  function enable_m_p_selector(){
+    $('#m_project_info').hide();
+    $('#m_project_info').text('');
+    $('#m_project_name').show();
+    $('#m_conflict_info').text('');
+  }
+  function disable_m_p_selector(str){
+    $('#m_project_name').hide();
+    $('#m_project_info').text(str);
+    $('#m_project_info').show();
+    $('#m_conflict_info').text('');
+  }
+  function enable_m_b_selector(){
+    $('#m_branch_info').hide();
+    $('#m_branch_info').text('');
+    $('#m_branch_name').show();
+    $('#m_conflict_info').text('');
+  }
+  function disable_m_b_selector(str){
+    $('#m_branch_name').hide();
+    $('#m_branch_info').text(str);
+    $('#m_branch_info').show();
+    $('#m_conflict_info').text('');
+  }
+  // ---------- ----------
+  function changeProject(){
+    var pn = $($('#m_project_name option:selected')[0]).val();
+
+    // clear selector
+    $('#m_branch_name').empty();
+
+    // get project's branchs
+    $.getJSON(
+      '/svn_wrapper/get_branches',
+      {
+        project_name: pn
+      },
+      function(data){
+        if(data.ret == 0){    // successed
+          for(var id in data.branches){
+            var branch = data.branches[id];
+            var node = OPTION_TPL.replace(/{\$PROJECT_NAME\$}/g, branch);
+            $('#m_branch_name').append(node);
+
+            enable_m_b_selector();
+            if(is_merge){
+              enable_merge_btn();
+            }else{
+              enable_pre_merge_btn();  
+            }
+          }
+        }else{                // failed
+          disable_m_b_selector(data.msg);
+          disable_pm_and_m_btn();
+        }
+      }
+    );
+  }
+	init_create_branch_dialog();
+  init_merge_branch_dialog();
+
+
+  $(document).ready(function() {
+    // ----------------------------
+  glyph_opts = {
+      map: {
+        doc: "glyphicon glyphicon-file",
+        docOpen: "glyphicon glyphicon-file",
+        checkbox: "glyphicon glyphicon-unchecked",
+        checkboxSelected: "glyphicon glyphicon-check",
+        checkboxUnknown: "glyphicon glyphicon-share",
+        dragHelper: "glyphicon glyphicon-play",
+        dropMarker: "glyphicon glyphicon-arrow-right",
+        error: "glyphicon glyphicon-warning-sign",
+        expanderClosed: "glyphicon glyphicon-menu-right",
+        expanderLazy: "glyphicon glyphicon-menu-right",  // glyphicon-plus-sign
+        expanderOpen: "glyphicon glyphicon-menu-down",  // glyphicon-collapse-down
+        folder: "glyphicon glyphicon-folder-close",
+        folderOpen: "glyphicon glyphicon-folder-open",
+        loading: "glyphicon glyphicon-refresh glyphicon-spin"
+      }
+    };
+
+
+    $jq1121(function(){
+       $jq1121("#treetable").fancytree({
+        extensions: ["dnd", "edit", "glyph", "table", "gridnav"],
+        checkbox: false,
+        dnd: {
+          focusOnClick: true,
+          dragStart: function(node, data) { return true; },
+          dragEnter: function(node, data) { return true; },
+          dragDrop: function(node, data) { data.otherNode.copyTo(node, data.hitMode); }
+        },
+        glyph: glyph_opts,
+        source: {
+          url: '/svn_wrapper/ajax_get_json_tree',
+          cache:true,
+          data: {path_url: "/" },
+        },
+        table: {
+   //       checkboxColumnIdx: 1,
+          nodeColumnIdx: 0
+        },
+        gridnav: {
+        autofocusInput:   false, // Focus first embedded input if node gets activated
+        handleCursorKeys: true   // Allow UP/DOWN in inputs to move to prev/next node
+      },
+        activate: function(event, data) {
+        },
+        lazyLoad: function(event, data) {
+          data.result = $.ajax({
+          url: '/svn_wrapper/ajax_get_json_tree',
+          dataType: "json",
+          cache:true,
+          data: {path_url: data.node.data.path_url }
+        });
+      },
+        renderColumns: function(event, data) {
+        var node = data.node;
+          $tdList = $(node.tr).find(">td");
+            $tdList.eq(1).text(node.data.author);
+            $tdList.eq(2).text(node.data.revision);
+            $tdList.eq(3).text(node.data.file_date);
+      }
+    });
+  });
+
+    // ---------------------------------------
+		$('#open_create_branch').click(function(){
+			init_create_branch_dialog();
+
+			$.getJSON(
+				'/svn_wrapper/get_projects',
+				function(data){
+					if(data.ret != 0){
+            disable_c_p_selector('无有效项目');
+            disable_c_btn();
+						return;
+					}
+					
+					$('#project_name').empty();
+					for(var id in data.projects){
+						var project_name = data.projects[id];
+						var node = OPTION_TPL.replace(/{\$PROJECT_NAME\$}/g, project_name)
+						$('#project_name').append(node);
+					}
+
+          enable_c_p_selector();
+          enable_c_btn();
+				}
+			);
+		});
+
+    $('#create_branch').click(function(){
+  		var bn = $.trim($('#branch_name').val());
+  		var pn = $.trim($('#project_name').val());
+
+  		if( $.trim(bn) == ''){ alert("分支名称不能为空");return false;}
+  		if( $.trim(pn) == ''){ alert("项目不能为空");return false;}
+
+  		$.getJSON('/svn_wrapper/branch_create', 
+  			{
+  				branch_name: bn,
+  				project_name: pn
+  			},
+  			function(data){
+  				if(data.ret == 0){
+  					alert('分支创建成功!');
+  					$('#close_create_branch').click();
+  					location.reload();
+  				}else{
+  					alert(data.msg);
+  				}
+  			}
+  		);
+
+  		return false;
+    });
+
+
+    // ---------- merge ----------
+    $('#open_pre_merge_branch').click(function(){
+      init_merge_branch_dialog();
+      is_merge = false;
+      $('#dialog_title').text('冲突检测');
+
+      $.getJSON(
+        '/svn_wrapper/get_projects',
+        function(data){
+          if(data.ret != 0){
+            disable_m_p_selector('无项目');
+            disable_m_b_selector('无分支');
+            disable_pm_and_m_btn();
+            return;
+          }
+          
+          $('#m_project_name').empty();
+          for(var id in data.projects){
+            var project_name = data.projects[id];
+            var node = OPTION_TPL.replace(/{\$PROJECT_NAME\$}/g, project_name)
+            $('#m_project_name').append(node);
+          }
+
+          enable_m_p_selector();
+          changeProject();
+        }
+      );
+    });
+
+    $('#open_merge_branch').click(function(){
+      is_merge = true;
+      $('#dialog_title').text('合并主干');
+      init_merge_branch_dialog();
+      
+
+      $.getJSON(
+        '/svn_wrapper/get_projects',
+        function(data){
+          if(data.ret != 0){
+            disable_m_p_selector('无项目');
+            disable_m_b_selector('无分支');
+            disable_pm_and_m_btn();
+            return;
+          }
+          
+          $('#m_project_name').empty();
+          for(var id in data.projects){
+            var project_name = data.projects[id];
+            var node = OPTION_TPL.replace(/{\$PROJECT_NAME\$}/g, project_name)
+            $('#m_project_name').append(node);
+          }
+
+          enable_m_p_selector();
+          changeProject();
+        }
+      );
+    });
+
+    $('#pre_merge_branch').click(function(){
+      var pn = $($('#m_project_name option:selected')[0]).val();
+      var bn = $($('#m_branch_name option:selected')[0]).val();
+
+      if($.trim(pn) == ''){ alert('项目不能为空');return false; }
+      if($.trim(bn) == ''){ alert('分支不能为空');return false; }
+      pn = $.trim(pn);
+      bn = $.trim(bn);
+
+      $.getJSON(
+        '/svn_wrapper/branch_merge',
+        {
+          project_name: pn,
+          branch_name: bn,
+          is_dry: 1
+        },
+        function(data){
+          if(data.ret == 0){
+            var conflict_count = data.tree_conflicts.length
+            if(conflict_count != 0){
+              msg = '检测到冲突共' + conflict_count + '个，列表如下：\r\n';
+              msg += '--------------------\r\n';
+              for(var i in data.tree_conflicts){
+                msg += '    ' + data.tree_conflicts[i] + '\r\n';
+              }
+              msg += '--------------------';
+              $('#m_conflict_info').css('color','red');
+              $('#m_conflict_info').text(msg);
+            }else{
+              $('#m_conflict_info').css('color','#090');
+              $('#m_conflict_info').text('检测无冲突，可合并主干！');
+            }
+            
+            return true;
+          }else{
+            alert("冲突检测失败，原因:" + data.msg);
+          }
+        }
+      );
+
+      return false;
+    });
+
+    $('#merge_branch').click(function(){
+      var pn = $($('#m_project_name option:selected')[0]).val();
+      var bn = $($('#m_branch_name option:selected')[0]).val();
+
+      if($.trim(pn) == ''){ alert('项目不能为空');return false; }
+      if($.trim(bn) == ''){ alert('分支不能为空');return false; }
+      pn = $.trim(pn);
+      bn = $.trim(bn);
+
+      $.getJSON(
+        '/svn_wrapper/branch_merge',
+        {
+          project_name: pn,
+          branch_name: bn,
+          is_dry: 0
+        },
+        function(data){
+          if(data.ret == 0){
+            var conflict_count = data.tree_conflicts.length
+            if(conflict_count != 0){
+              msg = '合并主干失败，检测到冲突共:' + conflict_count + '个，列表如下：\r\n';
+              msg += '--------------------\r\n';
+              for(var i in data.tree_conflicts){
+                msg += '    ' + data.tree_conflicts[i] + '\r\n';
+              }
+              msg += '--------------------';
+              $('#m_conflict_info').css('color','red');
+              $('#m_conflict_info').text(msg);
+            }else{
+              $('#m_conflict_info').css('color','#090');
+              $('#m_conflict_info').text('合并主干成功');
+              return true;
+            }
+            
+            return true;
+          }else{
+            alert("合并主干失败，原因:" + data.msg);
+          }
+        }
+      );
+
+      return false;
+    });
+
+
+
+
+  });
+
+  </script>
+
+
+
+
+  {% endblock %}

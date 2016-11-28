@@ -1,0 +1,415 @@
+{% extends "base.html" %}
+  {% block content %}
+  <div id="page-wrapper">
+     <div class="row">
+         <div class="col-lg-12">
+             <h2 class="page-header">权限管理</h2>
+         </div>
+         <!-- /.col-lg-12 -->
+     </div>
+     <!-- /.row -->
+     <div class="row">
+         <div class="col-lg-12">
+             <div class="panel panel-default">
+                 <div class="panel-heading">
+                     权限管理
+                     <!-- begin action -->
+                     <div class="btn-group" style="float:right">
+                       <button type="button" class="btn btn-outline btn-success btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                       动作 <span class="caret"></span>
+                       </button>
+                       <ul class="dropdown-menu">
+                         <li><a id="add_privilege" href="#"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> | 添加 </a></li>
+                         <li role="separator" class="divider"></li>
+                         <li><a id="modify_privilege" href="#"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> | 修改 </a></li>
+                         <li role="separator" class="divider"></li>
+                         <li><a id="delete_privilege" href="#"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> | 删除 </a></li>
+                       </ul>
+                       <!-- begin all modal  -->
+                       <!-- add  modal -->
+                       <div id="add_modal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+                         <div class="modal-dialog modal-lg">
+                           <div class="modal-content">
+                             <div class="modal-header">
+                               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                               <h4 class="modal-title" id="exampleModalLabel">添加</h4>
+                             </div>
+                             <div class="modal-body">
+                               <form class="form-horizontal" id="add_data" method="post" action="../account/add_privilege">
+                                 <fieldset>
+                                   <div class="form-group">
+                                     <label for="name" class="col-sm-3 control-label">权限名</label>
+                                     <div class="col-sm-9">
+                                       <input class="form-control" id="name" name="name" minlength="1" type="text" placeholder="name" required>
+                                     </div>
+                                   </div>
+
+                                   <div class="form-group">
+                                     <label for="allow" class="col-sm-3 control-label">命令白名单</label>
+                                     <div class="col-sm-9">
+                                       <input class="form-control" id="allow" name="allow" minlength="1" type="text" placeholder="eg. 'command1','command2','commandN'!!warning:if allow all,don't write anything">
+                                     </div>
+                                   </div>
+
+                                   <div class="form-group">
+                                     <label for="deny" class="col-sm-3 control-label">命令黑名单</label>
+                                     <div class="col-sm-9">
+                                       <input class="form-control" id="deny" name="deny" minlength="1" type="text" placeholder="eg. 'command1','command2','commandN'!!warning:if allow all,don't write anything" >
+                                     </div>
+                                   </div>
+
+                                   <div class="form-group">
+                                     <label for="informations" class="col-sm-3 control-label">信息</label>
+                                     <div class="col-sm-9">
+                                       <textarea class="form-control" id="informations" name="informations" minlength="1" required></textarea>
+                                     </div>
+                                   </div>
+
+                                   <div class="form-group">
+                                     <div class="col-sm-offset-3 col-sm-9">
+                                       <div class="checkbox">
+                                         <label>
+                                           <input checked type="checkbox" name="enabled" value="true"> 开启或关闭
+                                         </label>
+                                       </div>
+                                     </div>
+                                   </div>
+
+                                   <div class="form-group">
+                                     <div class="col-sm-offset-3 col-sm-9">
+                                       <button onclick="submit" id="add_commit" type="submit" class="btn btn-outline btn-success btn-xs">提交</button>
+                                     </div>
+                                   </div>
+                                 </fieldset>
+                               </form>
+                             </div>
+                           </div>
+                         </div>
+                       </div>
+                       <!-- end add  modal -->
+
+                       <!-- delete  modal -->
+                       <div id="delete_modal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+                         <div class="modal-dialog modal-lg">
+                           <div class="modal-content">
+                             <div class="modal-header">
+                               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                               <h4 class="modal-title" id="exampleModalLabel">确定?</h4>
+                             </div>
+                             <div class="modal-body">
+                               <form id="delete_data" class="form-inline" method="POST" action="../account/del_privilege">
+                               <!-- jquery will append content here -->
+                               </form>
+                             </div>
+                             <div class="modal-footer">
+                               <button type="button" class="btn btn-outline btn-warning btn-xs" data-dismiss="modal">关闭</button>
+                               <button id="delete_commit" type="button" class="btn btn-outline btn-danger btn-xs" data-dismiss="modal" >删除</button>
+                             </div>
+                           </div>
+                         </div>
+                       </div>
+                       <!-- end delete group  -->
+                       
+                       <!-- modify group --> 
+                       <div id="modify_modal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+                         <div class="modal-dialog modal-lg">
+                           <div class="modal-content">
+                             <div class="modal-header">
+                               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                               <h4 class="modal-title" id="exampleModalLabel">修改</h4>
+                             </div>
+                             <div class="modal-body">
+
+                               <form id="modify_data" class="form-horizontal" method="POST" action="../account/modify_privilege">
+                                   <div class="form-group">
+                                     <label for="name" class="col-sm-3 control-label">Id</label>
+                                     <div class="col-sm-9">
+                                       <input readonly class="form-control" id="id" name="id" minlength="1" type="text" placeholder="id" required>
+                                     </div>
+                                   </div>
+                                   <div class="form-group">
+                                     <label for="name" class="col-sm-3 control-label">权限名</label>
+                                     <div class="col-sm-9">
+                                       <input class="form-control" id="name" name="name" minlength="1" type="text" placeholder="name" required>
+                                     </div>
+                                   </div>
+
+                                   <div class="form-group">
+                                     <label for="allow" class="col-sm-3 control-label">命令白名单</label>
+                                     <div class="col-sm-9">
+                                       <input class="form-control" id="allow" name="allow" minlength="1" type="text" placeholder="eg. 'command1','comman    d2','commandN'!!warning:if allow all,don't write anything">
+                                     </div>
+                                   </div>
+
+                                   <div class="form-group">
+                                     <label for="deny" class="col-sm-3 control-label">命令黑名单</label>
+                                     <div class="col-sm-9">
+                                       <input class="form-control" id="deny" name="deny" minlength="1" type="text" placeholder="eg. 'command1','comman    d2','commandN'!!warning:if allow all,don't write anything">
+                                     </div>
+                                   </div>
+
+                                   <div class="form-group">
+                                     <label for="informations" class="col-sm-3 control-label">信息</label>
+                                     <div class="col-sm-9">
+                                       <textarea class="form-control" id="informations" name="informations" minlength="1" required></textarea>
+                                     </div>
+                                   </div>
+
+                                   <div class="form-group">
+                                     <div class="col-sm-offset-3 col-sm-9">
+                                       <div class="checkbox">
+                                         <label>
+                                           <input id="enabled"  type="checkbox" name="enabled" value=""> 开启或关闭
+                                         </label>
+                                       </div>
+                                     </div>
+                                   </div>
+                               </form>
+                             </div>
+                             <div class="modal-footer">
+                               <button type="button" class="btn btn-outline btn-warning btn-xs" data-dismiss="modal">关闭</button>
+                               <button id="modify_commit" type="button" class="btn btn-outline btn-primary btn-xs" data-dismiss="modal" >保存</button>
+                             </div>
+                           </div>
+                         </div>
+                       </div>
+                       <!-- end modify  -->
+
+                       <!-- checkbox error modal -->
+                       <div id="checkbox_error_modal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+                         <div class="modal-dialog modal-lg">
+                           <div class="modal-content">
+                             <div class="modal-content">
+                               <div class="modal-header">
+                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                               </div>
+                               <div class="modal-body">
+                                 <h4 class="modal-title" id="checkbox_error">没有选择项</h4>
+                               </div>
+                             </div>
+                           </div>
+                         </div>
+                       </div>
+                       <!-- end checkbox page error -->
+
+                       <!-- alert error modal -->
+                       {% if error %}
+                       <div id="error_modal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+                         <div class="modal-dialog modal-lg">
+                           <div class="modal-content">
+                             <div class="modal-content">
+                               <div class="modal-header">
+                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                               </div>
+                               <div class="modal-body">
+                                 <h4 class="modal-title" id="error">{{ error }}</h4>
+                               </div>
+                             </div>
+                           </div>
+                         </div>
+                       </div>
+                       {% endif %}
+                       <!-- end alert error modal  -->
+                       
+                       <!-- alert success modal -->
+                       {% if success %}
+                       <div id="success_modal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+                         <div class="modal-dialog modal-lg">
+                           <div class="modal-content">
+                             <div class="modal-content">
+                               <div class="modal-header">
+                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                               </div>
+                               <div class="modal-body">
+                                 <h4 id="success" class="modal-title">{{ success }}</h4>
+                               </div>
+                             </div>
+                           </div>
+                         </div>
+                       </div>
+                       {% endif %}
+                       <!-- end alert success modal  -->
+                     </div>
+                     <!-- end action -->
+                 </div>
+                 <!-- /.panel-heading -->
+                 <div class="panel-body">
+                     <div class="dataTable_wrapper">
+                         <table id="datatable-demo" class="table table-striped table-bordered table-hover">
+                             <thead>
+                                 <tr>
+                                    <th>
+                                      <input id="CHKall" type="checkbox" name="CHKall" value="CHKall"></input>
+                                    </th>
+                                    <th>ID</th>
+                                    <th>权限名</th>
+                                    <th>命令白名单</th>
+                                    <th>命令黑名单</th>
+                                    <th style="display:none" >Informations</th>
+                                    <th>启用</th>
+                                    <th style="display:none">Opearation</th>
+                                 </tr>
+                             </thead>
+                             <tbody>
+                               {% if privileges %}
+                               {% for p in privileges %}
+                               <tr id="{{ p.id }}" class="even gradeC">
+                                   <td>
+                                     <input  name="CHKlist" type="checkbox" value="{{ p.id }}"></input>
+                                   </td>
+                                   <td id="id" style="word-break:break-all">{{ p.id }}</td>
+                                   <td id="name" style="word-break:break-all">{{ p.name }}</td>
+                                   <td id="allow" style="word-break:break-all">{{ p.allow }}</td>
+                                   <td id="deny" style="word-break:break-all">{{ p.deny }}</td>
+                                   <td id="informations" style="display:none;word-break:break-all">{{ p.informations }}</td>
+                                   <td id="enabled" style="word-break:break-all">{{ p.enabled|lower }}</td>
+                                   
+                                   <td style="display:none"><button id="modify_privilege" name="modify_button" value="{{ p.id }}" type="button" class="btn btn-outline btn-success btn-xs"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit</button></td>
+                               </tr>
+                               {% endfor %}
+                               {% endif %}
+                             </tbody>
+                         </table>
+                     </div>
+                     <!-- /.table-responsive -->
+                 </div>
+                 <!-- /.panel-body -->
+             </div>
+             <!-- /.panel -->
+         </div>
+         <!-- /.col-lg-12 -->
+     </div>
+     <!-- /.row -->
+   </div>
+        <!-- /#page-wrapper -->
+
+  {% endblock %}
+    {% block jquery%}
+    <script type="text/javascript">
+      $(document).ready(function(){
+        //全选或全不选 
+        $("#CHKall").click(function(){
+            if(this.checked){    
+                $("input[name='CHKlist']").prop("checked", true);   
+            }else{    
+                $("input[name='CHKlist']").prop("checked", false); 
+            }    
+         });  
+        // end slelect all
+	console.log($('#datatable-demo').length);
+        //data table
+        $("#datatable-demo").DataTable( {
+           //设置第一列为初始化排序的列
+           "order": [[ 1, "desc" ]],
+           //该值的含义为。初始化datatable，但对序号为0,10列的列不进行排序，别的列均可进行排序 
+           "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,7 ] }],
+		   responsive: true,
+                "oLanguage": {
+                    "sProcessing":   "处理中...",
+                    "sLengthMenu":   "显示 _MENU_ 项结果",
+                    "sZeroRecords":  "没有匹配结果",
+                    "sInfo":         "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                    "sInfoEmpty":    "显示第 0 至 0 项结果，共 0 项",
+                    "sInfoFiltered": "(由 _MAX_ 项结果过滤)",
+                    "sInfoPostFix":  "",
+                    "sSearch":       "搜索:",
+                    "sUrl":          "",
+                    "sEmptyTable":     "表中数据为空",
+                    "sLoadingRecords": "载入中...",
+                    "sInfoThousands":  ",",
+                    "oPaginate": {
+                                 "sFirst":    "首页",
+                                 "sPrevious": "上页",
+                                 "sNext":     "下页",
+                                 "sLast":     "末页"
+                    },
+                    "oAria": {
+                                 "sSortAscending":  ": 以升序排列此列",
+                                 "sSortDescending": ": 以降序排列此列"
+                                 }
+        }
+		   
+           });     
+        // end data table
+        // add //
+        $("#add_privilege").click(function(){
+            $('#add_modal').modal('show')
+
+            $("#add_commit").click(function(){
+                $("#add_data").submit()
+            });
+            
+            });
+        // end add //
+
+
+        // delete //
+        $("#delete_privilege").click(function(){
+           var ids=[];
+           $('input[name="CHKlist"]:checked').each(function(){
+               var id=$(this).val();
+               ids.push(id);
+           }); 
+           if (ids.length >0)
+               {
+               $("#delete_data").empty()
+               for (i in ids){     
+                   $("#delete_data").append(
+                       '<div class="form-group"><label class="control-label">ID: </label><input readonly name="id" value="'+ ids[i] +'" type="text" class="form-control"></input></div> <br>'
+                       );
+                   };
+                 $('#delete_modal').modal('show')
+               }
+             else 
+                {
+                   $('#checkbox_error_modal').modal('show')
+                }
+           $("#delete_commit").click(function(){
+                 $("#delete_data").submit()
+             });
+      });
+      // end delete //
+      // modify //
+      $("#modify_privilege").click(function(){
+          var ids=[];
+          $('input[name="CHKlist"]:checked').each(function(){
+              var id=$(this).val();
+              ids.push(id);
+          });
+          var tmp_id=ids[0];
+          var tmp_name=$("#"+tmp_id).find("#name").text();
+          var tmp_allow=$("#"+tmp_id).find("#allow").text();
+          var tmp_deny=$("#"+tmp_id).find("#deny").text();
+          var tmp_enabled=$("#"+tmp_id).find("#enabled").text();
+          var tmp_informations=$("#"+tmp_id).find("#informations").text();
+          $('#modify_data').find('input#id').val(tmp_id);
+          $('#modify_data').find('input#name').val(tmp_name);
+          $('#modify_data').find('input#allow').val(tmp_allow);
+          $('#modify_data').find('input#deny').val(tmp_deny);
+          if (tmp_enabled == "true")
+              {
+              $('#modify_data').find('input#enabled').attr("checked",true);
+              $('#modify_data').find('input#enabled').val(tmp_enabled);
+              }
+          else
+              {
+              $('#modify_data').find('input#enabled').attr("checked",false);
+              $('#modify_data').find('input#enabled').val(tmp_enabled);
+              }
+          $('#modify_data').find('textarea#informations').val(tmp_informations);
+          $('#modify_modal').modal('show')
+          $('#modify_commit').click(function(){
+              $('#modify_data').submit();
+              });
+      });
+      // end modify //
+
+      //show success and error modal //
+      $('#success_modal').modal('show')
+      $('#error_modal').modal('show')
+      //  end show success and error modal //
+    });  
+    </script>
+    {% endblock %}
+
+
